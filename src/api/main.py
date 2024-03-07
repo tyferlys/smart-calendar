@@ -17,7 +17,7 @@ app.add_middleware(
 app.include_router(routerClient, prefix="/clients", tags=["clients"])
 app.include_router(routerOwner, prefix="/owner", tags=["owner"])
 
-
+# test
 @app.get("/")
 def read_root() -> str:
     return "Сервер работает"
