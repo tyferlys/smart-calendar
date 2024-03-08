@@ -20,4 +20,4 @@ app.include_router(routerOwner, prefix="/owner", tags=["owner"])
 
 @app.get("/")
 def read_root() -> str:
-    return "Сервер работает! ура!"
+    return "Сервер работает!"
