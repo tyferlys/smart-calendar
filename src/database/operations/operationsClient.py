@@ -1,8 +1,10 @@
 from typing import List
 
 from sqlalchemy import select, update
+from sqlalchemy.orm import joinedload
 
-from src.api.pydanticTypes.client import ClientCreateRequest, ClientGetResponse
+from src.api.pydanticTypes.client import ClientCreateRequest, ClientGetResponse, ClientUpdateRequest, \
+    ClientUpdateResponse, ClientCreateResponse
 from src.database.configDataBase import AsyncSessionLocal
 from src.database.models.models import Client
 
@@ -56,19 +58,28 @@ async def get_client_database(phone: str) -> ClientGetResponse | None:
                 raise Exception("ошибка при поиске")
 
 
-async def create_client_database(client: ClientCreateRequest):
+async def create_client_database(clientRequest: ClientCreateRequest) -> ClientCreateResponse:
     async with AsyncSessionLocal() as session:
         async with session.begin():
             isError = False
             try:
-                client = Client(last_name=client.last_name, first_name=client.first_name,
-                                middle_name=client.middle_name, phone=client.phone)
+                client = Client(last_name=clientRequest.last_name, first_name=clientRequest.first_name,
+                                middle_name=clientRequest.middle_name, phone=clientRequest.phone)
 
                 session.add(client)
                 await session.commit()
+
+                return ClientCreateResponse(
+                    id=client.id,
+                    last_name=client.last_name,
+                    first_name=client.first_name,
+                    middle_name=client.middle_name,
+                    phone=client.phone
+                )
             except Exception as e:
                 await session.rollback()
                 isError = True
+                print(e)
             finally:
                 await session.close()
 
@@ -76,7 +87,7 @@ async def create_client_database(client: ClientCreateRequest):
                 raise Exception("ошибка при создании клиента")
 
 
-async def update_client_database(client: ClientCreateRequest):
+async def update_client_database(client: ClientUpdateRequest) -> ClientUpdateResponse:
     async with AsyncSessionLocal() as session:
         async with session.begin():
             isError = False
@@ -87,10 +98,22 @@ async def update_client_database(client: ClientCreateRequest):
                                               first_name=client.first_name,
                                               middle_name=client.middle_name))
 
+                clientUpdated = await session.execute(select(Client).where(Client.phone == client.phone))
+                clientUpdated = clientUpdated.scalars().first()
+
                 await session.commit()
+
+                return ClientUpdateResponse(
+                    id=clientUpdated.id,
+                    last_name=clientUpdated.last_name,
+                    first_name=clientUpdated.first_name,
+                    middle_name=clientUpdated.middle_name,
+                    phone=clientUpdated.phone
+                )
             except Exception as e:
                 await session.rollback()
                 isError = True
+                print(e)
             finally:
                 await session.close()
 

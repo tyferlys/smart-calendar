@@ -82,6 +82,7 @@ class Owner(Base):
     middle_name: Mapped[str] = mapped_column(String(60))
     phone: Mapped[str] = mapped_column(String(60), unique=True)
     password: Mapped[str] = mapped_column(String(60))
+    token: Mapped[str] = mapped_column(String(60), nullable=True)
 
     def __repr__(self) -> str:
         return (f"Owner: id - {self.id}, last_name - {self.last_name}, "

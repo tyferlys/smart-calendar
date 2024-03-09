@@ -1,26 +1,40 @@
+import os
+
+from dotenv import load_dotenv
 from fastapi import APIRouter, Response, status
 
-from src.api.pydanticTypes.owner import OwnerGetResponse, OwnerCreateRequest, OwnerCreateResponse
-from src.database.operations.operationsOwner import get_owner_database, update_owner_database
+from src.api.pydanticTypes.owner import OwnerLoginResponse, OwnerUpdateRequest, OwnerLoginRequest, OwnerUpdateResponse
+from src.database.operations.operationsOwner import update_owner_database, login_owner_database
 
 routerOwner = APIRouter()
 
+load_dotenv()
+token = os.getenv("TOKEN")
 
-@routerOwner.get("", tags=["owner.get"])
-async def get_owner(response: Response) -> OwnerGetResponse | None:
+
+@routerOwner.post("/login", tags=["owner.post"])
+async def login_owner(password: OwnerLoginRequest, response: Response) -> OwnerLoginResponse | None:
     try:
-        owner = await get_owner_database()
+        owner = await login_owner_database(password.password)
 
-        response.status_code = status.HTTP_200_OK
-        return owner
+        if owner is not None:
+            response.status_code = status.HTTP_200_OK
+            return owner
+        else:
+            response.status_code = status.HTTP_409_CONFLICT
+            return None
     except Exception as e:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return None
 
 
 @routerOwner.put("", tags=["owner.put"])
-async def update_owner(owner: OwnerCreateRequest, response: Response) -> OwnerCreateResponse:
+async def update_owner(tokenRequest: str, owner: OwnerUpdateRequest, response: Response) -> OwnerUpdateResponse | None:
     try:
+        if tokenRequest != token:
+            response.status_code = status.HTTP_409_CONFLICT
+            return None
+
         await update_owner_database(owner)
         response.status_code = status.HTTP_200_OK
     except Exception as e:
