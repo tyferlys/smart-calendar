@@ -21,7 +21,8 @@ async def get_clients_database() -> List[ClientGetResponse]:
                                           last_name=founded_client.last_name,
                                           first_name=founded_client.first_name,
                                           middle_name=founded_client.middle_name,
-                                          phone=founded_client.phone) for founded_client in founded_clients]
+                                          phone=founded_client.phone,
+                                          username=founded_client.username) for founded_client in founded_clients]
             except Exception as e:
                 await session.rollback()
                 isError = True
@@ -45,7 +46,8 @@ async def get_client_database(phone: str) -> ClientGetResponse | None:
                                              last_name=founded_client[0].last_name,
                                              first_name=founded_client[0].first_name,
                                              middle_name=founded_client[0].middle_name,
-                                             phone=founded_client[0].phone)
+                                             phone=founded_client[0].phone,
+                                             username=founded_client[0].username)
                 else:
                     return None
             except Exception as e:
@@ -64,7 +66,7 @@ async def create_client_database(clientRequest: ClientCreateRequest) -> ClientCr
             isError = False
             try:
                 client = Client(last_name=clientRequest.last_name, first_name=clientRequest.first_name,
-                                middle_name=clientRequest.middle_name, phone=clientRequest.phone)
+                                middle_name=clientRequest.middle_name, phone=clientRequest.phone, username=clientRequest.username)
 
                 session.add(client)
                 await session.commit()
@@ -74,7 +76,8 @@ async def create_client_database(clientRequest: ClientCreateRequest) -> ClientCr
                     last_name=client.last_name,
                     first_name=client.first_name,
                     middle_name=client.middle_name,
-                    phone=client.phone
+                    phone=client.phone,
+                    username = clientRequest.username
                 )
             except Exception as e:
                 await session.rollback()
@@ -96,7 +99,8 @@ async def update_client_database(client: ClientUpdateRequest) -> ClientUpdateRes
                                       .where(Client.phone == client.phone)
                                       .values(last_name=client.last_name,
                                               first_name=client.first_name,
-                                              middle_name=client.middle_name))
+                                              middle_name=client.middle_name,
+                                              username=client.username))
 
                 clientUpdated = await session.execute(select(Client).where(Client.phone == client.phone))
                 clientUpdated = clientUpdated.scalars().first()
@@ -108,7 +112,8 @@ async def update_client_database(client: ClientUpdateRequest) -> ClientUpdateRes
                     last_name=clientUpdated.last_name,
                     first_name=clientUpdated.first_name,
                     middle_name=clientUpdated.middle_name,
-                    phone=clientUpdated.phone
+                    phone=clientUpdated.phone,
+                    username=clientUpdated.username
                 )
             except Exception as e:
                 await session.rollback()

@@ -46,6 +46,8 @@ class Client(Base):
     first_name: Mapped[str] = mapped_column(String(60))
     middle_name: Mapped[str] = mapped_column(String(60))
     phone: Mapped[str] = mapped_column(String(60), unique=True)
+    username: Mapped[str] = mapped_column(String(60), nullable=True)
+
 
     events: Mapped[List["Event"]] = relationship(back_populates="client")
 

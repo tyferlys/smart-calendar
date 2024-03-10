@@ -81,3 +81,4 @@ async def update_client(tokenRequest: str, client: ClientUpdateRequest, response
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return None
 
+

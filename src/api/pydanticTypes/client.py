@@ -7,6 +7,7 @@ class ClientGetResponse(BaseModel):
     first_name: str
     middle_name: str
     phone: str
+    username: str
 
 
 class ClientCreateRequest(BaseModel):
@@ -14,6 +15,7 @@ class ClientCreateRequest(BaseModel):
     first_name: str
     middle_name: str
     phone: str
+    username: str
 
 
 class ClientCreateResponse(BaseModel):
@@ -22,6 +24,7 @@ class ClientCreateResponse(BaseModel):
     first_name: str
     middle_name: str
     phone: str
+    username: str
 
 
 class ClientUpdateRequest(BaseModel):
@@ -30,6 +33,7 @@ class ClientUpdateRequest(BaseModel):
     first_name: str
     middle_name: str
     phone: str
+    username: str
 
 
 class ClientUpdateResponse(ClientUpdateRequest):
