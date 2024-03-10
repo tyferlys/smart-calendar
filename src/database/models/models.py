@@ -48,8 +48,8 @@ class Client(Base):
     phone: Mapped[str] = mapped_column(String(60), unique=True)
     username: Mapped[str] = mapped_column(String(60), nullable=True)
 
-
     events: Mapped[List["Event"]] = relationship(back_populates="client")
+    reports: Mapped[List["Report"]] = relationship(back_populates="client")
 
     def __repr__(self) -> str:
         return (f"Client: id - {self.id}, last_name - {self.last_name}, "
@@ -100,3 +100,12 @@ class Options(Base):
 
     def __repr__(self) -> str:
         return f"Options: id - {self.id}, begin_time - {self.begin_time}, end_time - {self.end_time}"
+
+
+class Report(Base):
+    __tablename__ = "treports"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    id_client: Mapped[int] = mapped_column(Integer, ForeignKey("tclient.id"))
+
+    client: Mapped["Client"] = relationship(back_populates="reports")

@@ -7,6 +7,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from src.api.routres.RouterClient import routerClient
+from src.api.routres.RouterReport import routerReport
 from src.api.routres.RouterService import routerService
 from src.api.routres.RouterOwner import routerOwner
 
@@ -27,6 +28,7 @@ app.add_middleware(
 app.include_router(routerClient, prefix="/clients", tags=["clients"])
 app.include_router(routerOwner, prefix="/owner", tags=["owner"])
 app.include_router(routerService, prefix="/services", tags=["services"])
+app.include_router(routerReport, prefix="/reports", tags=["reports"])
 
 
 @app.middleware("http")
