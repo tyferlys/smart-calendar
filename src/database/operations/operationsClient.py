@@ -4,25 +4,33 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import joinedload
 
 from src.api.pydanticTypes.client import ClientCreateRequest, ClientGetResponse, ClientUpdateRequest, \
-    ClientUpdateResponse, ClientCreateResponse
+    ClientUpdateResponse, ClientCreateResponse, ClientGetAllResponse
 from src.database.configDataBase import AsyncSessionLocal
 from src.database.models.models import Client
 
 
-async def get_clients_database(offset: int, limit: int) -> List[ClientGetResponse]:
+async def get_clients_database(offset: int, limit: int) -> ClientGetAllResponse:
     async with AsyncSessionLocal() as session:
         async with session.begin():
             isError = False
             try:
                 founded_clients = await session.execute(select(Client).offset(offset).limit(limit))
                 founded_clients = founded_clients.scalars().all()
+                count = await session.execute(select(Client))
+                count = count.scalars().all()
 
-                return [ClientGetResponse(id=founded_client.id,
+                founded_clients = [ClientGetResponse(id=founded_client.id,
                                           last_name=founded_client.last_name,
                                           first_name=founded_client.first_name,
                                           middle_name=founded_client.middle_name,
                                           phone=founded_client.phone,
                                           username=founded_client.username) for founded_client in founded_clients]
+                count = len(count)
+
+                return ClientGetAllResponse(
+                    clients=founded_clients,
+                    count=count
+                )
             except Exception as e:
                 await session.rollback()
                 isError = True

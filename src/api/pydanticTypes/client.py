@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import BaseModel
 
 
@@ -9,6 +11,10 @@ class ClientGetResponse(BaseModel):
     phone: str
     username: str
 
+
+class ClientGetAllResponse(BaseModel):
+    clients: List[ClientGetResponse]
+    count: int
 
 class ClientCreateRequest(BaseModel):
     last_name: str

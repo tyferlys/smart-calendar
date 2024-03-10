@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, Response, status
 
 from src.api.pydanticTypes.client import ClientCreateRequest, ClientCreateResponse, ClientGetResponse, \
-    ClientUpdateRequest, ClientUpdateResponse
+    ClientUpdateRequest, ClientUpdateResponse, ClientGetAllResponse
 from src.database.operations.operationsClient import create_client_database, get_client_database, get_clients_database, \
     update_client_database
 
@@ -17,11 +17,11 @@ token = os.getenv("TOKEN")
 
 
 @routerClient.get("", tags=["clients.get"])
-async def get_clients(tokenRequest: str, page: int, count: int, response: Response) -> List[ClientGetResponse]:
+async def get_clients(tokenRequest: str, page: int, count: int, response: Response) -> ClientGetAllResponse | None:
     try:
         if tokenRequest != token:
             response.status_code = status.HTTP_409_CONFLICT
-            return []
+            return None
 
         offset = (page - 1) * count
         limit = count
@@ -31,7 +31,7 @@ async def get_clients(tokenRequest: str, page: int, count: int, response: Respon
         return clients
     except Exception as e:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return []
+        return None
 
 
 @routerClient.get("/{phone}", tags=["clients.get"])
