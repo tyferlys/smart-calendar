@@ -23,3 +23,5 @@ app.include_router(routerService, prefix="/services", tags=["services"])
 @app.get("/")
 def read_root() -> str:
     return "Сервер работает"
+
+#TODO пагинация клиентам

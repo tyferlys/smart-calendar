@@ -17,13 +17,15 @@ token = os.getenv("TOKEN")
 
 
 @routerClient.get("", tags=["clients.get"])
-async def get_clients(tokenRequest: str, response: Response) -> List[ClientGetResponse]:
+async def get_clients(tokenRequest: str, page: int, count: int, response: Response) -> List[ClientGetResponse]:
     try:
         if tokenRequest != token:
             response.status_code = status.HTTP_409_CONFLICT
             return []
 
-        clients = await get_clients_database()
+        offset = (page - 1) * count
+        limit = count
+        clients = await get_clients_database(offset, limit)
 
         response.status_code = status.HTTP_200_OK
         return clients

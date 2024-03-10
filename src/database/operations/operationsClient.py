@@ -9,12 +9,12 @@ from src.database.configDataBase import AsyncSessionLocal
 from src.database.models.models import Client
 
 
-async def get_clients_database() -> List[ClientGetResponse]:
+async def get_clients_database(offset: int, limit: int) -> List[ClientGetResponse]:
     async with AsyncSessionLocal() as session:
         async with session.begin():
             isError = False
             try:
-                founded_clients = await session.execute(select(Client))
+                founded_clients = await session.execute(select(Client).offset(offset).limit(limit))
                 founded_clients = founded_clients.scalars().all()
 
                 return [ClientGetResponse(id=founded_client.id,
