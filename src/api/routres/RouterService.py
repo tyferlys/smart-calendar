@@ -14,27 +14,20 @@ token = os.getenv("TOKEN")
 
 
 @routerService.get("", tags=["services.get"])
-async def get_services(tokenRequest: str, response: Response) -> List[ServiceGetRequest]:
+async def get_services(response: Response) -> List[ServiceGetRequest] | None:
     try:
-        if tokenRequest != token:
-            response.status_code = status.HTTP_409_CONFLICT
-            return []
-
         services = await get_services_database()
 
         response.status_code = status.HTTP_200_OK
         return services
     except Exception as e:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return []
+        return None
+
 
 @routerService.post("", tags=["services.post"])
-async def create_service(tokenRequest: str, service: ServiceCreateRequest, response: Response) -> ServiceCreateResponse | None:
+async def create_service(service: ServiceCreateRequest, response: Response) -> ServiceCreateResponse | None:
     try:
-        if tokenRequest != token:
-            response.status_code = status.HTTP_409_CONFLICT
-            return None
-
         newService = await create_service_database(service)
         response.status_code = status.HTTP_201_CREATED
         return newService

@@ -1,7 +1,7 @@
 from sqlalchemy import select, update
 
 from src.api.pydanticTypes import owner
-from src.api.pydanticTypes.owner import OwnerLoginResponse, OwnerUpdateResponse
+from src.api.pydanticTypes.owner import OwnerLoginResponse, OwnerUpdateResponse, OwnerUpdateRequest
 from src.database.configDataBase import AsyncSessionLocal
 from src.database.models.models import Owner
 
@@ -37,7 +37,7 @@ async def login_owner_database(password: str) -> OwnerLoginResponse | None:
                 raise Exception("ошибка при получении владельца")
 
 
-async def update_owner_database(owner: OwnerUpdateResponse):
+async def update_owner_database(owner: OwnerUpdateRequest) -> OwnerUpdateResponse:
     async with AsyncSessionLocal() as session:
         async with session.begin():
             isError = False
@@ -49,7 +49,19 @@ async def update_owner_database(owner: OwnerUpdateResponse):
                                               phone=owner.phone,
                                               password=owner.password))
 
+                newOwner = await session.execute(select(Owner))
+                newOwner = newOwner.scalars().first()
+
                 await session.commit()
+
+                return OwnerUpdateResponse(
+                    id=newOwner.id,
+                    last_name=newOwner.last_name,
+                    first_name=newOwner.first_name,
+                    middle_name=newOwner.middle_name,
+                    phone=newOwner.phone,
+                    password=newOwner.password,
+                )
             except Exception as e:
                 await session.rollback()
                 isError = True

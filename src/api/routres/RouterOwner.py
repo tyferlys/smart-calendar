@@ -29,15 +29,11 @@ async def login_owner(password: OwnerLoginRequest, response: Response) -> OwnerL
 
 
 @routerOwner.put("", tags=["owner.put"])
-async def update_owner(tokenRequest: str, owner: OwnerUpdateRequest, response: Response) -> OwnerUpdateResponse | None:
+async def update_owner(owner: OwnerUpdateRequest, response: Response) -> OwnerUpdateResponse | None:
     try:
-        if tokenRequest != token:
-            response.status_code = status.HTTP_409_CONFLICT
-            return None
-
-        await update_owner_database(owner)
+        newOwner = await update_owner_database(owner)
         response.status_code = status.HTTP_200_OK
+        return newOwner
     except Exception as e:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-
-    return owner
+        return None

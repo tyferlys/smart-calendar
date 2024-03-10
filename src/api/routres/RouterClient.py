@@ -12,17 +12,10 @@ from src.database.operations.operationsClient import create_client_database, get
 
 routerClient = APIRouter()
 
-load_dotenv()
-token = os.getenv("TOKEN")
-
 
 @routerClient.get("", tags=["clients.get"])
-async def get_clients(tokenRequest: str, page: int, count: int, response: Response) -> ClientGetAllResponse | None:
+async def get_clients(page: int, count: int, response: Response) -> ClientGetAllResponse | None:
     try:
-        if tokenRequest != token:
-            response.status_code = status.HTTP_409_CONFLICT
-            return None
-
         offset = (page - 1) * count
         limit = count
         clients = await get_clients_database(offset, limit)
@@ -34,14 +27,10 @@ async def get_clients(tokenRequest: str, page: int, count: int, response: Respon
         return None
 
 
-@routerClient.get("/{phone}", tags=["clients.get"])
-async def get_client(tokenRequest: str, phone: str, response: Response) -> ClientGetResponse | None:
+@routerClient.get("/{phoneOrUsername}", tags=["clients.get"])
+async def get_client(phoneOrUsername: str, response: Response) -> ClientGetResponse | None:
     try:
-        if tokenRequest != token:
-            response.status_code = status.HTTP_409_CONFLICT
-            return None
-
-        client = await get_client_database(phone)
+        client = await get_client_database(phoneOrUsername)
 
         if client is not None:
             response.status_code = status.HTTP_200_OK
@@ -55,12 +44,8 @@ async def get_client(tokenRequest: str, phone: str, response: Response) -> Clien
 
 
 @routerClient.post("", tags=["clients.post"])
-async def create_client(tokenRequest: str, client: ClientCreateRequest, response: Response) -> ClientCreateResponse | None:
+async def create_client(client: ClientCreateRequest, response: Response) -> ClientCreateResponse | None:
     try:
-        if tokenRequest != token:
-            response.status_code = status.HTTP_409_CONFLICT
-            return None
-
         newClient = await create_client_database(client)
         response.status_code = status.HTTP_201_CREATED
         return newClient
@@ -70,12 +55,8 @@ async def create_client(tokenRequest: str, client: ClientCreateRequest, response
 
 
 @routerClient.put("", tags=["clients.put"])
-async def update_client(tokenRequest: str, client: ClientUpdateRequest, response: Response) -> ClientUpdateResponse | None:
+async def update_client(client: ClientUpdateRequest, response: Response) -> ClientUpdateResponse | None:
     try:
-        if tokenRequest != token:
-            response.status_code = status.HTTP_409_CONFLICT
-            return None
-
         newClient = await update_client_database(client)
         response.status_code = status.HTTP_200_OK
         return newClient

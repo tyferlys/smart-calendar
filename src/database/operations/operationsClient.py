@@ -41,12 +41,12 @@ async def get_clients_database(offset: int, limit: int) -> ClientGetAllResponse:
                 raise Exception("ошибка при поиске")
 
 
-async def get_client_database(phone: str) -> ClientGetResponse | None:
+async def get_client_database(phoneOrUsername: str) -> ClientGetResponse | None:
     async with AsyncSessionLocal() as session:
         async with session.begin():
             isError = False
             try:
-                founded_client = await session.execute(select(Client).where(Client.phone == phone))
+                founded_client = await session.execute(select(Client).where(Client.phone == phoneOrUsername or Client.username == phoneOrUsername))
                 founded_client = founded_client.scalars().all()
 
                 if len(founded_client) > 0:
