@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class ReportCreateRequest(BaseModel):
     phone: str
+    text: str
 
 
 class ReportCreateResponse(BaseModel):
@@ -12,3 +13,4 @@ class ReportCreateResponse(BaseModel):
     middle_name: str
     phone: str
     username: str
+    text: str

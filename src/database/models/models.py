@@ -107,5 +107,6 @@ class Report(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     id_client: Mapped[int] = mapped_column(Integer, ForeignKey("tclient.id"))
+    text: Mapped[str] = mapped_column(String(60), nullable=True)
 
     client: Mapped["Client"] = relationship(back_populates="reports")

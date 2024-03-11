@@ -15,7 +15,8 @@ async def create_report_database(reportRequest: ReportCreateRequest) -> ReportCr
                 client = client.scalars().first()
 
                 newReport = Report(
-                    id_client=client.id
+                    id_client=client.id,
+                    text=reportRequest.text
                 )
                 session.add(newReport)
                 await session.commit()
@@ -26,7 +27,8 @@ async def create_report_database(reportRequest: ReportCreateRequest) -> ReportCr
                     first_name=client.first_name,
                     middle_name=client.middle_name,
                     phone=client.phone,
-                    username=client.username
+                    username=client.username,
+                    text=reportRequest.text
                 )
             except Exception as e:
                 await session.rollback()
