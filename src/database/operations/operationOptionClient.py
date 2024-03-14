@@ -14,6 +14,9 @@ async def get_option_client_database(phoneOrTelegramId: str) -> OptionClientGetR
                 founded_client = await session.execute(select(Client).where(or_(Client.phone == phoneOrTelegramId, Client.telegram_id == phoneOrTelegramId)))
                 founded_client = founded_client.scalars().first()
 
+                if founded_client is None:
+                    return None
+
                 founded_option = await session.execute(select(OptionsClient).where(OptionsClient.id_client == founded_client.id))
                 founded_option = founded_option.scalars().first()
 

@@ -13,11 +13,15 @@ routerOptionClient = APIRouter()
 
 
 @routerOptionClient.get("/{phoneOrTelegramId}", tags=["options_clients.get"])
-async def get_option_client(phoneOrTelegramId: str, response: Response) -> OptionClientGetResponse:
+async def get_option_client(phoneOrTelegramId: str, response: Response) -> OptionClientGetResponse | None:
     try:
         option = await get_option_client_database(phoneOrTelegramId)
-        response.status_code = status.HTTP_200_OK
-        return option
+        if option is not None:
+            response.status_code = status.HTTP_200_OK
+            return option
+        else:
+            response.status_code = status.HTTP_404_NOT_FOUND
+            return None
     except Exception as e:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return None

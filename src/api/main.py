@@ -45,18 +45,19 @@ async def add_process_time_header(request: Request, call_next):
         response = await call_next(request)
         return response
     else:
-        try:
-            token = request.headers["x-token"]
+        if "x-token" not in request.headers:
+            response = JSONResponse(status_code=409, content={"message": "Invalid tokens"})
+            return response
 
-            if token == sourceToken:
-                response = await call_next(request)
-                return response
-            else:
-                response = JSONResponse(status_code=409, content={"message": "Invalid token"})
-                return response
-        except Exception as e:
+        token = request.headers["x-token"]
+
+        if token == sourceToken:
+            response = await call_next(request)
+            return response
+        else:
             response = JSONResponse(status_code=409, content={"message": "Invalid token"})
             return response
+
 
 
 @app.get("/")
