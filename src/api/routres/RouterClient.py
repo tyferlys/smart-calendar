@@ -27,10 +27,10 @@ async def get_clients(page: int, count: int, response: Response) -> ClientGetAll
         return None
 
 
-@routerClient.get("/{phoneOrUsername}", tags=["clients.get"])
-async def get_client(phoneOrUsername: str, response: Response) -> ClientGetResponse | None:
+@routerClient.get("/{phoneOrTelegramId}", tags=["clients.get"])
+async def get_client(phoneOrTelegramId: str, response: Response) -> ClientGetResponse | None:
     try:
-        client = await get_client_database(phoneOrUsername)
+        client = await get_client_database(phoneOrTelegramId)
 
         if client is not None:
             response.status_code = status.HTTP_200_OK

@@ -7,6 +7,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from src.api.routres.RouterClient import routerClient
+from src.api.routres.RouterOptionClient import routerOptionClient
 from src.api.routres.RouterReport import routerReport
 from src.api.routres.RouterService import routerService
 from src.api.routres.RouterOwner import routerOwner
@@ -29,13 +30,15 @@ app.include_router(routerClient, prefix="/clients", tags=["clients"])
 app.include_router(routerOwner, prefix="/owner", tags=["owner"])
 app.include_router(routerService, prefix="/services", tags=["services"])
 app.include_router(routerReport, prefix="/reports", tags=["reports"])
+app.include_router(routerOptionClient, prefix="/options_clients", tags=["options_clients"])
 
 
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     paths = [
         "/docs",
-        "/openapi"
+        "/openapi",
+        "/owner/login"
     ]
 
     if any(request.url.path.startswith(path) for path in paths):
@@ -51,8 +54,8 @@ async def add_process_time_header(request: Request, call_next):
             else:
                 response = JSONResponse(status_code=409, content={"message": "Invalid token"})
                 return response
-        except:
-            response = JSONResponse(status_code=409, content={"message": "Invalid token"})
+        except Exception as e:
+            response = JSONResponse(status_code=500, content={"message": "Server error"})
             return response
 
 

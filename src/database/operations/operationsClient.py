@@ -42,12 +42,12 @@ async def get_clients_database(offset: int, limit: int) -> ClientGetAllResponse:
                 raise Exception("ошибка при поиске")
 
 
-async def get_client_database(phoneOrUsername: str) -> ClientGetResponse | None:
+async def get_client_database(phoneOrTelegramId: str) -> ClientGetResponse | None:
     async with AsyncSessionLocal() as session:
         async with session.begin():
             isError = False
             try:
-                founded_client = await session.execute(select(Client).where(or_(Client.phone == phoneOrUsername, Client.username == phoneOrUsername)))
+                founded_client = await session.execute(select(Client).where(or_(Client.phone == phoneOrTelegramId, Client.telegram_id == phoneOrTelegramId)))
                 founded_client = founded_client.scalars().all()
 
                 if len(founded_client) > 0:
