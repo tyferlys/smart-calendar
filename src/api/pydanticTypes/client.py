@@ -10,11 +10,13 @@ class ClientGetResponse(BaseModel):
     middle_name: str
     phone: str
     username: str
+    telegram_id: str
 
 
 class ClientGetAllResponse(BaseModel):
     clients: List[ClientGetResponse]
     count: int
+
 
 class ClientCreateRequest(BaseModel):
     last_name: str
@@ -22,6 +24,7 @@ class ClientCreateRequest(BaseModel):
     middle_name: str
     phone: str
     username: str
+    telegram_id: str
 
 
 class ClientCreateResponse(BaseModel):
@@ -31,6 +34,7 @@ class ClientCreateResponse(BaseModel):
     middle_name: str
     phone: str
     username: str
+    telegram_id: str
 
 
 class ClientUpdateRequest(BaseModel):
@@ -40,6 +44,7 @@ class ClientUpdateRequest(BaseModel):
     middle_name: str
     phone: str
     username: str
+    telegram_id: str
 
 
 class ClientUpdateResponse(ClientUpdateRequest):

@@ -13,4 +13,5 @@ class ReportCreateResponse(BaseModel):
     middle_name: str
     phone: str
     username: str
+    telegram_id: str
     text: str

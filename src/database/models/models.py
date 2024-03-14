@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import String, Date, DateTime, Integer, ForeignKey
+from sqlalchemy import String, Date, DateTime, Integer, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database.configDataBase import Base
@@ -47,9 +47,11 @@ class Client(Base):
     middle_name: Mapped[str] = mapped_column(String(60))
     phone: Mapped[str] = mapped_column(String(60), unique=True)
     username: Mapped[str] = mapped_column(String(60), nullable=True)
+    telegram_id: Mapped[str] = mapped_column(String(60), nullable=True)
 
     events: Mapped[List["Event"]] = relationship(back_populates="client")
     reports: Mapped[List["Report"]] = relationship(back_populates="client")
+    options: Mapped[List["OptionsClient"]] = relationship(back_populates="client")
 
     def __repr__(self) -> str:
         return (f"Client: id - {self.id}, last_name - {self.last_name}, "
@@ -110,3 +112,13 @@ class Report(Base):
     text: Mapped[str] = mapped_column(String(60), nullable=True)
 
     client: Mapped["Client"] = relationship(back_populates="reports")
+
+
+class OptionsClient(Base):
+    __tablename__ = "toptions_client"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    id_client: Mapped[int] = mapped_column(Integer, ForeignKey("tclient.id"), primary_key=True)
+    is_notification: Mapped[bool] = mapped_column(Boolean)
+
+    client: Mapped["Client"] = relationship(back_populates="options")

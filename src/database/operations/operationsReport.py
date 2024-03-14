@@ -28,6 +28,7 @@ async def create_report_database(reportRequest: ReportCreateRequest) -> ReportCr
                     middle_name=client.middle_name,
                     phone=client.phone,
                     username=client.username,
+                    telegram_id=client.telegram_id,
                     text=reportRequest.text
                 )
             except Exception as e:
