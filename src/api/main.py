@@ -55,7 +55,7 @@ async def add_process_time_header(request: Request, call_next):
                 response = JSONResponse(status_code=409, content={"message": "Invalid token"})
                 return response
         except Exception as e:
-            response = JSONResponse(status_code=500, content={"message": "Server error"})
+            response = JSONResponse(status_code=409, content={"message": "Invalid token"})
             return response
 
 
