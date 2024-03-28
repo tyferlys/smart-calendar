@@ -6,7 +6,7 @@ from sqlalchemy.orm import joinedload
 from src.api.pydanticTypes.client import ClientCreateRequest, ClientGetResponse, ClientUpdateRequest, \
     ClientUpdateResponse, ClientCreateResponse, ClientGetAllResponse
 from src.database.configDataBase import AsyncSessionLocal
-from src.database.models.models import Client
+from src.database.models.models import Client, OptionsClient
 
 
 async def get_clients_database(offset: int, limit: int) -> ClientGetAllResponse:
@@ -77,8 +77,12 @@ async def create_client_database(clientRequest: ClientCreateRequest) -> ClientCr
             try:
                 client = Client(last_name=clientRequest.last_name, first_name=clientRequest.first_name,
                                 middle_name=clientRequest.middle_name, phone=clientRequest.phone, username=clientRequest.username, telegram_id=clientRequest.telegram_id)
-
                 session.add(client)
+                await session.flush()
+
+                clientOption = OptionsClient(id_client=client.id, is_notification=False)
+                session.add(clientOption)
+
                 await session.commit()
 
                 return ClientCreateResponse(

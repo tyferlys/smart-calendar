@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import String, Date, DateTime, Integer, ForeignKey, Boolean
+from sqlalchemy import String, Date, DateTime, Integer, ForeignKey, Boolean, Time
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database.configDataBase import Base
@@ -12,8 +12,8 @@ class Day(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     date: Mapped[Date] = mapped_column(Date)
     status: Mapped[str] = mapped_column(String(60))
-    begin_time: Mapped[DateTime] = mapped_column(DateTime)
-    end_time: Mapped[DateTime] = mapped_column(DateTime)
+    begin_time: Mapped[Time] = mapped_column(Time(timezone=True))
+    end_time: Mapped[Time] = mapped_column(Time(timezone=True))
 
     events: Mapped[List["Event"]] = relationship(back_populates="day")
 
@@ -66,7 +66,7 @@ class Event(Base):
     id_service: Mapped[int] = mapped_column(Integer, ForeignKey("tservice.id"))
     id_client: Mapped[int] = mapped_column(Integer, ForeignKey("tclient.id"))
     status: Mapped[str] = mapped_column(String(60))
-    time: Mapped[DateTime] = mapped_column(DateTime)
+    time: Mapped[DateTime] = mapped_column(Time(timezone=True))
 
     day: Mapped["Day"] = relationship(back_populates="events")
     service: Mapped["Service"] = relationship(back_populates="events")
@@ -97,8 +97,8 @@ class Options(Base):
     __tablename__ = "toptions"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    begin_time: Mapped[DateTime] = mapped_column(DateTime)
-    end_time: Mapped[DateTime] = mapped_column(DateTime)
+    begin_time: Mapped[Time] = mapped_column(Time(timezone=True))
+    end_time: Mapped[Time] = mapped_column(Time(timezone=True))
 
     def __repr__(self) -> str:
         return f"Options: id - {self.id}, begin_time - {self.begin_time}, end_time - {self.end_time}"
@@ -118,7 +118,7 @@ class OptionsClient(Base):
     __tablename__ = "toptions_client"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    id_client: Mapped[int] = mapped_column(Integer, ForeignKey("tclient.id"), primary_key=True)
+    id_client: Mapped[int] = mapped_column(Integer, ForeignKey("tclient.id"))
     is_notification: Mapped[bool] = mapped_column(Boolean)
 
     client: Mapped["Client"] = relationship(back_populates="options")

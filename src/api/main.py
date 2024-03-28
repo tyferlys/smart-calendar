@@ -3,11 +3,14 @@ import os
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from src.api.routres.RouterClient import routerClient
+from src.api.routres.RouterDay import routerDay
 from src.api.routres.RouterOptionClient import routerOptionClient
+from src.api.routres.RouterRecord import routerRecord
 from src.api.routres.RouterReport import routerReport
 from src.api.routres.RouterService import routerService
 from src.api.routres.RouterOwner import routerOwner
@@ -31,6 +34,8 @@ app.include_router(routerOwner, prefix="/owner", tags=["owner"])
 app.include_router(routerService, prefix="/services", tags=["services"])
 app.include_router(routerReport, prefix="/reports", tags=["reports"])
 app.include_router(routerOptionClient, prefix="/options_clients", tags=["options_clients"])
+app.include_router(routerRecord, prefix="/records", tags=["records"])
+app.include_router(routerDay, prefix="/days", tags=["days"])
 
 
 @app.middleware("http")
@@ -64,3 +69,22 @@ async def add_process_time_header(request: Request, call_next):
 def read_root() -> str:
     return "Сервер работает"
 
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+
+    openapi_schema = get_openapi(
+        title="API умного календаря",
+        version="0.4.0",
+        description="Лишний раз не бузи",
+        routes=app.routes,
+    )
+    app.openapi_schema = openapi_schema
+
+    return app.openapi_schema
+
+
+app.openapi = custom_openapi
+
+#TODO ЗАПИСЬ КЛИЕНТА, ПОЛУЧЕНИЕ ЗАПИСЕЙ ДЛЯ КЛИЕНТА
