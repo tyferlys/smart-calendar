@@ -64,7 +64,6 @@ async def add_process_time_header(request: Request, call_next):
             return response
 
 
-
 @app.get("/")
 def read_root() -> str:
     return "Сервер работает"
