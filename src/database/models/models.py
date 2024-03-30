@@ -55,7 +55,7 @@ class Client(Base):
 
     def __repr__(self) -> str:
         return (f"Client: id - {self.id}, last_name - {self.last_name}, "
-                f"first_name - {self.first_name}, middle_name - {self.middle_name}, phone - {self.phone}")
+                f"first_name - {self.first_name}, middle_name - {self.middle_name}, phone - {self.phone}, username - {self.username}, telegram_id - {self.telegram_id}")
 
 
 class Event(Base):
@@ -90,7 +90,7 @@ class Owner(Base):
 
     def __repr__(self) -> str:
         return (f"Owner: id - {self.id}, last_name - {self.last_name}, "
-                f"first_name - {self.first_name}, middle_name - {self.middle_name}, phone - {self.phone}, password - {self.password}")
+                f"first_name - {self.first_name}, middle_name - {self.middle_name}, phone - {self.phone}, password - {self.password}, token - {self.token}")
 
 
 class Options(Base):
@@ -113,6 +113,9 @@ class Report(Base):
 
     client: Mapped["Client"] = relationship(back_populates="reports")
 
+    def __repr__(self) -> str:
+        return f"Report: id - {self.id}, id_client - {self.id_client}, text - {self.text}"
+
 
 class OptionsClient(Base):
     __tablename__ = "toptions_client"
@@ -122,3 +125,6 @@ class OptionsClient(Base):
     is_notification: Mapped[bool] = mapped_column(Boolean)
 
     client: Mapped["Client"] = relationship(back_populates="options")
+
+    def __repr__(self) -> str:
+        return f"OptionsClient: id - {self.id}, id_client - {self.id_client}, is_notification - {self.text}"

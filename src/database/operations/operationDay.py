@@ -18,7 +18,6 @@ async def get_days_database(beginDate: datetime.date, endDate: datetime.date) ->
                 return [
                     day.date.day for day in founded_days
                 ]
-
             except Exception as e:
                 await session.rollback()
                 isError = True

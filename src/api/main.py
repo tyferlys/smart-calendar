@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
+from loguru import logger
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
@@ -45,12 +46,12 @@ async def add_process_time_header(request: Request, call_next):
         "/openapi",
         "/owner/login"
     ]
-
     if any(request.url.path.startswith(path) for path in paths):
         response = await call_next(request)
         return response
     else:
         if "x-token" not in request.headers:
+            logger.info(f"Отправлен запрос: ip - {request.client.host} без x-token")
             response = JSONResponse(status_code=409, content={"message": "Invalid tokens"})
             return response
 
@@ -60,6 +61,7 @@ async def add_process_time_header(request: Request, call_next):
             response = await call_next(request)
             return response
         else:
+            logger.info(f"Отправлен запрос: ip - {request.client.host} с неправильным x-token")
             response = JSONResponse(status_code=409, content={"message": "Invalid token"})
             return response
 
