@@ -3,13 +3,15 @@ from typing import List
 
 from fastapi import APIRouter, Response, status
 from loguru import logger
-from src.database.operations.operationDay import get_days_database
+
+from src.api.pydanticTypes.day import DayGetResponse
+from src.database.operations.operationDay import get_days_database, get_day_database
 
 routerDay = APIRouter()
 
 
 @routerDay.get("", tags=["days.get"])
-async def get_days(beginDate: datetime.date, endDate: datetime.date, response: Response) -> List[int]:
+async def get_days(beginDate: datetime.date, endDate: datetime.date, response: Response) -> List[int] | None:
     logger.info(f"Запрос на получение дней с данными: beginDate - {beginDate}, endDate - {endDate}")
     try:
         days = await get_days_database(beginDate, endDate)
@@ -23,3 +25,16 @@ async def get_days(beginDate: datetime.date, endDate: datetime.date, response: R
         return None
 
 
+@routerDay.get("/{dateDay}", tags=["days.get"])
+async def get_day(dateDay: datetime.date, response: Response) -> DayGetResponse | None:
+    logger.info(f"Запрос на получение информации о дне с данными: {datetime}")
+    try:
+        day = await get_day_database(dateDay)
+        logger.info(f"Полученная информация - {day}")
+
+        response.status_code = status.HTTP_200_OK
+        return day
+    except Exception as e:
+        logger.warning(f"Ошибка при выполнении запроса - {str(e)}")
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return None

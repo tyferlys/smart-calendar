@@ -10,7 +10,7 @@ class Day(Base):
     __tablename__ = "tday"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    date: Mapped[Date] = mapped_column(Date)
+    date: Mapped[Date] = mapped_column(Date, unique=True)
     status: Mapped[str] = mapped_column(String(60))
     begin_time: Mapped[Time] = mapped_column(Time(timezone=True))
     end_time: Mapped[Time] = mapped_column(Time(timezone=True))
