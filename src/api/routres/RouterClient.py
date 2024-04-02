@@ -20,7 +20,7 @@ async def get_clients(page: int, count: int, response: Response) -> ClientGetAll
         offset = (page - 1) * count
         limit = count
         clients = await get_clients_database(offset, limit)
-        logger.info(f"Получено клиентов - {len(clients)}")
+        logger.info(f"Получено клиентов - {len(clients.clients)}")
 
         response.status_code = status.HTTP_200_OK
         return clients

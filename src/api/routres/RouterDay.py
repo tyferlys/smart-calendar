@@ -26,10 +26,10 @@ async def get_days(beginDate: datetime.date, endDate: datetime.date, response: R
 
 
 @routerDay.get("/{dateDay}", tags=["days.get"])
-async def get_day(dateDay: datetime.date, response: Response) -> DayGetResponse | None:
+async def get_day(dateDay: datetime.date, telegram_id: str, response: Response) -> DayGetResponse | None:
     logger.info(f"Запрос на получение информации о дне с данными: {datetime}")
     try:
-        day = await get_day_database(dateDay)
+        day = await get_day_database(dateDay, telegram_id)
         logger.info(f"Полученная информация - {day}")
 
         response.status_code = status.HTTP_200_OK

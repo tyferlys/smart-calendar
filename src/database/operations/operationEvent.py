@@ -7,7 +7,7 @@ from sqlalchemy.orm import joinedload
 
 from src.api.pydanticTypes.record import RecordCreateRequest, RecordCreateResponse
 from src.database.configDataBase import AsyncSessionLocal
-from src.database.models.models import Client, Service, Day, Options, Event
+from src.database.models.models import Client, Service, Day, Options, Event, OptionsClient
 
 
 async def create_client_database(event: RecordCreateRequest):
@@ -18,34 +18,32 @@ async def create_client_database(event: RecordCreateRequest):
                 client = await session.execute(select(Client).where(Client.telegram_id == event.telegram_id))
                 client = client.scalars().first()
 
+                clientOption = await session.execute(select(OptionsClient).where(OptionsClient.id_client == client.id))
+                clientOption = clientOption.scalars().first()
+
                 service = await session.execute(select(Service).where(Service.id == event.id_service))
                 service = service.scalars().first()
 
                 day = await session.execute(select(Day).where(Day.date == event.date_day))
                 day = day.scalars().first()
 
-                if client is None or service is None:
-                    logger.warning("Клиента или услуги не существует")
-                    raise Exception()
+                timeDeltaClientTimeZone = datetime.timedelta(hours=clientOption.timezone)
+                timeClientEvent = datetime.datetime.combine(event.date_day, event.time) - timeDeltaClientTimeZone
 
                 if day is not None and day.status != "free":
-                    similarEvents = await session.execute(select(Event).options(joinedload(Event.service)).where(Event.id_day == day.id))
+                    similarEvents = await session.execute(select(Event).options(joinedload(Event.service)).options(joinedload(Event.client)).where(Event.id_day == day.id))
                     similarEvents = similarEvents.scalars().all()
 
-                    if len(similarEvents) != 0:
-                        for similarEvent in similarEvents:
-                            timeDeltaDuration = datetime.timedelta(minutes=similarEvent.service.duration)
-                            timeDeltaAfterPause = datetime.timedelta(minutes=similarEvent.service.after_pause)
+                    for similarEvent in similarEvents:
+                        timeDeltaDuration = datetime.timedelta(minutes=similarEvent.service.duration)
+                        timeDeltaAfterPause = datetime.timedelta(minutes=similarEvent.service.after_pause)
 
-                            endTime = datetime.datetime.combine(day.date, similarEvent.time) + timeDeltaDuration + timeDeltaAfterPause
-                            endTime = endTime.replace(tzinfo=similarEvent.time.tzinfo).timetz()
+                        beginTimeEvent = datetime.datetime.combine(day.date, similarEvent.time)
+                        endTime = beginTimeEvent + timeDeltaDuration + timeDeltaAfterPause
 
-                            logger.info(endTime)
-                            print(endTime)
-
-                            if similarEvent.time <= event.time <= endTime:
-                                logger.warning("Запись перекрывается другой")
-                                return None
+                        if beginTimeEvent.time() <= timeClientEvent.time() <= endTime.time():
+                            logger.warning("Запись перекрывается другой")
+                            return None
                 elif day is not None and day.status == "free":
                     logger.warning("День выходной")
                     return None
@@ -57,7 +55,7 @@ async def create_client_database(event: RecordCreateRequest):
                     session.add(day)
                     await session.flush()
 
-                if not (day.begin_time <= event.time <= day.end_time):
+                if not (day.begin_time <= timeClientEvent.time() <= day.end_time):
                     logger.warning("День не входит во временные рамки рабочего дня")
                     return None
 
@@ -66,7 +64,7 @@ async def create_client_database(event: RecordCreateRequest):
                     id_service=service.id,
                     id_client=client.id,
                     status="work",
-                    time=event.time,
+                    time=timeClientEvent.time(),
                 )
                 session.add(newEvent)
                 await session.commit()
@@ -83,4 +81,3 @@ async def create_client_database(event: RecordCreateRequest):
             if isError:
                 raise Exception("ошибка при создании записи")
 
-#TODO РАЗОБРАТЬСЯ С ТАЙМЗОНОЙ
