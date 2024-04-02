@@ -23,7 +23,8 @@ async def get_option_client_database(phoneOrTelegramId: str) -> OptionClientGetR
                 return OptionClientGetResponse(
                     id=founded_option.id,
                     id_client=founded_option.id_client,
-                    is_notification=founded_option.is_notification
+                    is_notification=founded_option.is_notification,
+                    timezone=founded_option.timezone
                 )
             except Exception as e:
                 await session.rollback()
@@ -42,7 +43,8 @@ async def update_option_client_database(optionClient: OptionClientUpdateRequest)
             try:
                 await session.execute(update(OptionsClient).where(OptionsClient.id_client == optionClient.id_client).values(
                     id_client=optionClient.id_client,
-                    is_notification=optionClient.is_notification
+                    is_notification=optionClient.is_notification,
+                    timezone=optionClient.timezone
                 ))
 
                 founded_option = await session.execute(select(OptionsClient).where(OptionsClient.id_client == optionClient.id_client))
@@ -53,7 +55,8 @@ async def update_option_client_database(optionClient: OptionClientUpdateRequest)
                 return OptionClientUpdateResponse(
                     id=founded_option.id,
                     id_client=founded_option.id_client,
-                    is_notification=founded_option.is_notification
+                    is_notification=founded_option.is_notification,
+                    timezone=founded_option.timezone
                 )
             except Exception as e:
                 await session.rollback()

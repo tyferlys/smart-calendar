@@ -12,8 +12,8 @@ class Day(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     date: Mapped[Date] = mapped_column(Date, unique=True)
     status: Mapped[str] = mapped_column(String(60))
-    begin_time: Mapped[Time] = mapped_column(Time(timezone=True))
-    end_time: Mapped[Time] = mapped_column(Time(timezone=True))
+    begin_time: Mapped[Time] = mapped_column(Time)
+    end_time: Mapped[Time] = mapped_column(Time)
 
     events: Mapped[List["Event"]] = relationship(back_populates="day")
 
@@ -66,7 +66,7 @@ class Event(Base):
     id_service: Mapped[int] = mapped_column(Integer, ForeignKey("tservice.id"))
     id_client: Mapped[int] = mapped_column(Integer, ForeignKey("tclient.id"))
     status: Mapped[str] = mapped_column(String(60))
-    time: Mapped[DateTime] = mapped_column(Time(timezone=True))
+    time: Mapped[DateTime] = mapped_column(Time)
 
     day: Mapped["Day"] = relationship(back_populates="events")
     service: Mapped["Service"] = relationship(back_populates="events")
@@ -97,8 +97,10 @@ class Options(Base):
     __tablename__ = "toptions"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    begin_time: Mapped[Time] = mapped_column(Time(timezone=True))
-    end_time: Mapped[Time] = mapped_column(Time(timezone=True))
+    begin_time: Mapped[Time] = mapped_column(Time)
+    end_time: Mapped[Time] = mapped_column(Time)
+    timezone_server: Mapped[int] = mapped_column(Integer, nullable=True, default=0)
+    timezone_admin: Mapped[int] = mapped_column(Integer, nullable=True, default=0)
 
     def __repr__(self) -> str:
         return f"Options: id - {self.id}, begin_time - {self.begin_time}, end_time - {self.end_time}"
@@ -123,6 +125,7 @@ class OptionsClient(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     id_client: Mapped[int] = mapped_column(Integer, ForeignKey("tclient.id"))
     is_notification: Mapped[bool] = mapped_column(Boolean)
+    timezone: Mapped[int] = mapped_column(Integer, nullable=True, default=0)
 
     client: Mapped["Client"] = relationship(back_populates="options")
 

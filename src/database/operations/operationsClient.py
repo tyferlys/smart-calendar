@@ -80,7 +80,7 @@ async def create_client_database(clientRequest: ClientCreateRequest) -> ClientCr
                 session.add(client)
                 await session.flush()
 
-                clientOption = OptionsClient(id_client=client.id, is_notification=False)
+                clientOption = OptionsClient(id_client=client.id, is_notification=False, timezone=3)
                 session.add(clientOption)
 
                 await session.commit()

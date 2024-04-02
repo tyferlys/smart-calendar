@@ -61,11 +61,8 @@ async def get_day_database(dateDay: datetime.date) -> DayGetResponse:
 
                 timeDeltaDuration = datetime.timedelta(minutes=founded_event.service.duration)
                 timeDeltaAfterPause = datetime.timedelta(minutes=founded_event.service.after_pause)
-                logger.info(f"{timeDeltaDuration}, {timeDeltaAfterPause}")
 
-                begin_time_free = datetime.datetime.combine(founded_day.date, founded_event.time) + timeDeltaDuration + timeDeltaAfterPause
-                begin_time_free = begin_time_free.replace(tzinfo=founded_event.time.tzinfo).timetz()
-                logger.info(f"{begin_time_free}")
+                begin_time_free = (datetime.datetime.combine(founded_day.date, founded_event.time) + timeDeltaDuration + timeDeltaAfterPause).time()
 
                 return DayGetResponse(
                     begin_time_free=begin_time_free,
