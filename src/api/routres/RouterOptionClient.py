@@ -33,7 +33,7 @@ async def get_option_client(phoneOrTelegramId: str, response: Response) -> Optio
 
 @routerOptionClient.put("", tags=["options_clients.put"])
 async def get_option_client(optionClient: OptionClientUpdateRequest,
-                            response: Response) -> OptionClientUpdateResponse | None:
+                            response: Response) -> OptionClientUpdateResponse | str:
     logger.info(f"Запрос на обновление настроек пользователя: данные - {optionClient}")
     try:
         newOption = await update_option_client_database(optionClient)
@@ -43,4 +43,4 @@ async def get_option_client(optionClient: OptionClientUpdateRequest,
     except Exception as e:
         logger.warning(f"Ошибка при выполнении запроса - {str(e)}")
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        return None
+        return str(e)
