@@ -32,7 +32,8 @@ async def get_option_client(phoneOrTelegramId: str, response: Response) -> Optio
 
 
 @routerOptionClient.put("", tags=["options_clients.put"])
-async def get_option_client(optionClient: OptionClientUpdateRequest, response: Response) -> OptionClientUpdateResponse | None:
+async def get_option_client(optionClient: OptionClientUpdateRequest,
+                            response: Response) -> OptionClientUpdateResponse | None:
     logger.info(f"Запрос на обновление настроек пользователя: данные - {optionClient}")
     try:
         newOption = await update_option_client_database(optionClient)
