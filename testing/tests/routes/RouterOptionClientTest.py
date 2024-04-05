@@ -45,5 +45,4 @@ async def test_put_option_client():
 
 
 if __name__ == '__main__':
-    # asyncio.run(test_get_option_client())
-    asyncio.run(test_put_option_client())
+    asyncio.run(test_get_option_client())
