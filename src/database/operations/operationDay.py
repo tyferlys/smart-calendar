@@ -54,7 +54,7 @@ async def get_day_database(dateDay: datetime.date, telegram_id: str) -> DayGetRe
 
                     return DayGetResponse(
                         begin_time_free=(datetime.datetime.combine(dateDay, option.begin_time) + timeDeltaClientTimeZone).time(),
-                        end_time_free=(datetime.datetime.combine(dateDay, option.begin_time) + timeDeltaClientTimeZone).time()
+                        end_time_free=(datetime.datetime.combine(dateDay, option.end_time) + timeDeltaClientTimeZone).time()
                     )
 
                 founded_event = await session.execute(select(Event).options(joinedload(Event.service)).where(Event.id_day == founded_day.id).order_by(desc(Event.time)))
