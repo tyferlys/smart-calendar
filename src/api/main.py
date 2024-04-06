@@ -51,7 +51,7 @@ async def add_process_time_header(request: Request, call_next):
         return response
     else:
         if "x-token" not in request.headers:
-            logger.info(f"Отправлен запрос: ip - {request.client.host} без x-token")
+            logger.info(f"Отправлен запрос: ip - {request.client.host} без x-token, на url {request.url}")
             response = JSONResponse(status_code=409, content={"message": "Invalid tokens"})
             return response
 
