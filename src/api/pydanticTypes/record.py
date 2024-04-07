@@ -1,4 +1,5 @@
 import datetime
+from typing import List
 
 from pydantic import BaseModel
 
@@ -17,3 +18,10 @@ class RecordCreateResponse(BaseModel):
     id_client: int
     status: str
     time: datetime.time
+
+
+class RecordGetRequest(BaseModel):
+    date_day: datetime.date
+    title_service: str
+    time: datetime.time
+

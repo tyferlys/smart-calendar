@@ -5,12 +5,54 @@ from loguru import logger
 from sqlalchemy import select, insert, and_
 from sqlalchemy.orm import joinedload
 
-from src.api.pydanticTypes.record import RecordCreateRequest, RecordCreateResponse
+from src.api.pydanticTypes.record import RecordCreateRequest, RecordCreateResponse, RecordGetRequest
 from src.database.configDataBase import AsyncSessionLocal
 from src.database.models.models import Client, Service, Day, Options, Event, OptionsClient
 
 
-async def create_client_database(event: RecordCreateRequest):
+async def get_records_client_database(phoneOrTelegramId: str) -> List[RecordGetRequest]:
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            isError = False
+            try:
+                client = await session.execute(select(Client).where(Client.telegram_id == phoneOrTelegramId))
+                client = client.scalars().first()
+
+                clientOption = await session.execute(select(OptionsClient).where(OptionsClient.id_client == client.id))
+                clientOption = clientOption.scalars().first()
+
+                events = await session.execute(
+                    select(Event)
+                    .where(and_(Event.id_client == client.id, Event.status == "wait"))
+                    .options(joinedload(Event.service))
+                    .options(joinedload(Event.day))
+                    .order_by(Event.time)
+                )
+                events = events.scalars().all()
+
+                timeDeltaClientTimeZone = datetime.timedelta(hours=clientOption.timezone)
+
+                data = []
+                for event in events:
+                    data.append(RecordGetRequest(
+                        date_day=event.day.date,
+                        title_service=event.service.title,
+                        time=(datetime.datetime.combine(event.day.date, event.time) + timeDeltaClientTimeZone).time()
+                    ))
+
+                return data
+            except Exception as e:
+                await session.rollback()
+                isError = True
+                print(e)
+            finally:
+                await session.close()
+
+            if isError:
+                raise Exception("ошибка при поиске записей")
+
+
+async def create_record_database(event: RecordCreateRequest):
     async with AsyncSessionLocal() as session:
         async with session.begin():
             isError = False
@@ -63,7 +105,7 @@ async def create_client_database(event: RecordCreateRequest):
                     id_day=day.id,
                     id_service=service.id,
                     id_client=client.id,
-                    status="work",
+                    status="wait",
                     time=timeClientEvent.time(),
                 )
                 session.add(newEvent)
