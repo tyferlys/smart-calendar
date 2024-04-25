@@ -83,7 +83,7 @@ async def create_record_database(event: RecordCreateRequest):
                         beginTimeEvent = datetime.datetime.combine(day.date, similarEvent.time)
                         endTime = beginTimeEvent + timeDeltaDuration + timeDeltaAfterPause
 
-                        if beginTimeEvent.time() <= timeClientEvent.time() <= endTime.time():
+                        if beginTimeEvent.time() < timeClientEvent.time() < endTime.time():
                             logger.warning("Запись перекрывается другой")
                             return None
                 elif day is not None and day.status == "free":
