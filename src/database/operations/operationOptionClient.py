@@ -4,7 +4,7 @@ from src.api.pydanticTypes.optionClient import OptionClientGetResponse, OptionCl
     OptionClientUpdateResponse
 from src.database.configDataBase import AsyncSessionLocal
 from src.database.models.models import Client, OptionsClient
-
+from loguru import logger
 
 async def get_option_client_database(phoneOrTelegramId: str) -> OptionClientGetResponse | None:
     async with AsyncSessionLocal() as session:
@@ -13,7 +13,6 @@ async def get_option_client_database(phoneOrTelegramId: str) -> OptionClientGetR
             try:
                 founded_client = await session.execute(select(Client).where(or_(Client.phone == phoneOrTelegramId, Client.telegram_id == phoneOrTelegramId)))
                 founded_client = founded_client.scalars().first()
-
                 if founded_client is None:
                     return None
 

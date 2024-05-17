@@ -8,6 +8,7 @@ from loguru import logger
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from configProject import get_settings
 from src.api.routres.RouterClient import routerClient
 from src.api.routres.RouterDay import routerDay
 from src.api.routres.RouterOptionClient import routerOptionClient
@@ -17,9 +18,7 @@ from src.api.routres.RouterService import routerService
 from src.api.routres.RouterOwner import routerOwner
 
 
-load_dotenv()
-sourceToken = os.getenv("TOKEN")
-
+settings = get_settings()
 app = FastAPI(title="Smart Calendar")
 
 app.add_middleware(
@@ -46,7 +45,7 @@ async def add_process_time_header(request: Request, call_next):
         "/openapi",
         "/owner/login"
     ]
-    if any(request.url.path.startswith(path) for path in paths):
+    if any(request.url.path.startswith(path) for path in paths) or settings.MODE == "dev":
         response = await call_next(request)
         return response
     else:
@@ -57,7 +56,7 @@ async def add_process_time_header(request: Request, call_next):
 
         token = request.headers["x-token"]
 
-        if token == sourceToken:
+        if token == settings.TOKEN:
             response = await call_next(request)
             return response
         else:
@@ -87,6 +86,10 @@ def custom_openapi():
 
 
 app.openapi = custom_openapi
+
+if __name__ == '__main__':
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 #TODO ЗАПИСЬ КЛИЕНТА, ПОЛУЧЕНИЕ ЗАПИСЕЙ ДЛЯ КЛИЕНТА
 #TODO РОМА ДЕЛАЕТ НАСТРОЙКИ НОВЫЕ - НОВАЯ ЛОГИКА ВЫВОДА ЗАПИСЕЙ - НОВАЯ ЛОГИКА ЗАПИСИ
