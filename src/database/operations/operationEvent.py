@@ -72,6 +72,10 @@ async def create_record_database(event: RecordCreateRequest):
                 timeDeltaClientTimeZone = datetime.timedelta(hours=clientOption.timezone)
                 timeClientEvent = datetime.datetime.combine(event.date_day, event.time) - timeDeltaClientTimeZone
 
+                timeDeltaServiceDuration = datetime.timedelta(hours=service.duration)
+                timeClientEventEnd = datetime.datetime.combine(event.date_day, event.time) - timeDeltaClientTimeZone + timeDeltaServiceDuration
+
+
                 if day is not None and day.status != "free":
                     similarEvents = await session.execute(select(Event).options(joinedload(Event.service)).options(joinedload(Event.client)).where(Event.id_day == day.id))
                     similarEvents = similarEvents.scalars().all()
@@ -85,9 +89,6 @@ async def create_record_database(event: RecordCreateRequest):
 
                         if beginTimeEvent.time() < timeClientEvent.time() < endTime.time():
                             logger.warning("Запись перекрывается другой")
-                            return None
-                        elif timeClientEvent.time() >= endTime.time():
-                            logger.warning("Запись невозможна")
                             return None
                 elif day is not None and day.status == "free":
                     logger.warning("День выходной")
@@ -113,6 +114,12 @@ async def create_record_database(event: RecordCreateRequest):
                 )
                 session.add(newEvent)
                 await session.commit()
+
+                if timeClientEventEnd.time() >= day.end_time:
+                    day.status = "closed"
+                    session.add(day)
+                    await session.commit()
+                    logger.info("День заблокирован")
 
                 logger.info(f"{client} \n {service} \n {day} \n {newEvent}")
                 return newEvent
