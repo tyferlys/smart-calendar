@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class ReportCreateRequest(BaseModel):
-    phone: str
+    telegram_id: str
     text: str
 
 

@@ -11,7 +11,7 @@ async def create_report_database(reportRequest: ReportCreateRequest) -> ReportCr
             isError = False
             try:
 
-                client = await session.execute(select(Client).where(Client.phone == reportRequest.phone))
+                client = await session.execute(select(Client).where(Client.telegram_id == reportRequest.telegram_id))
                 client = client.scalars().first()
 
                 newReport = Report(
