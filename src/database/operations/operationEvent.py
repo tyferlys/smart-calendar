@@ -72,9 +72,8 @@ async def create_record_database(event: RecordCreateRequest):
                 timeDeltaClientTimeZone = datetime.timedelta(hours=clientOption.timezone)
                 timeClientEvent = datetime.datetime.combine(event.date_day, event.time) - timeDeltaClientTimeZone
 
-                timeDeltaServiceDuration = datetime.timedelta(hours=service.duration)
+                timeDeltaServiceDuration = datetime.timedelta(minutes=(service.duration + service.after_pause))
                 timeClientEventEnd = datetime.datetime.combine(event.date_day, event.time) - timeDeltaClientTimeZone + timeDeltaServiceDuration
-
 
                 if day is not None and day.status != "free":
                     similarEvents = await session.execute(select(Event).options(joinedload(Event.service)).options(joinedload(Event.client)).where(Event.id_day == day.id))
