@@ -112,15 +112,15 @@ async def create_record_database(event: RecordCreateRequest):
                     time=timeClientEvent.time(),
                 )
                 session.add(newEvent)
-                await session.commit()
 
                 if timeClientEventEnd.time() >= day.end_time:
                     day.status = "closed"
                     session.add(day)
-                    await session.commit()
                     logger.info("День заблокирован")
 
                 logger.info(f"{client} \n {service} \n {day} \n {newEvent}")
+
+                await session.commit()
                 return newEvent
             except Exception as e:
                 await session.rollback()
