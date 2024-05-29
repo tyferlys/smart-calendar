@@ -86,6 +86,9 @@ async def create_record_database(event: RecordCreateRequest):
                         if beginTimeEvent.time() < timeClientEvent.time() < endTime.time():
                             logger.warning("Запись перекрывается другой")
                             return None
+                        elif timeClientEvent.time() >= endTime.time():
+                            logger.warning("Запись невозможна")
+                            return None
                 elif day is not None and day.status == "free":
                     logger.warning("День выходной")
                     return None
