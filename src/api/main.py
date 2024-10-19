@@ -16,7 +16,7 @@ from src.api.routres.RouterRecord import routerRecord
 from src.api.routres.RouterReport import routerReport
 from src.api.routres.RouterService import routerService
 from src.api.routres.RouterOwner import routerOwner
-
+from src.database.configDataBase import create_tables
 
 settings = get_settings()
 app = FastAPI(title="Smart Calendar")
@@ -28,6 +28,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("startup")
+async def on_startup():
+    await create_tables()
 
 app.include_router(routerClient, prefix="/clients", tags=["clients"])
 app.include_router(routerOwner, prefix="/owner", tags=["owner"])
