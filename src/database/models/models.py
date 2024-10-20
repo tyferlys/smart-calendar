@@ -2,8 +2,13 @@ from typing import List
 
 from sqlalchemy import String, Date, DateTime, Integer, ForeignKey, Boolean, Time
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import select
+import secrets
 
-from src.database.configDataBase import Base
+import random
+import string
+
+from src.database.configDataBase import Base, AsyncSessionLocal
 
 
 class Day(Base):
@@ -131,3 +136,43 @@ class OptionsClient(Base):
 
     def __repr__(self) -> str:
         return f"OptionsClient: id - {self.id}, id_client - {self.id_client}, is_notification - {self.text}"
+    
+    
+
+# Функция для генерации случайной строки
+def generate_random_string(length: int) -> str:
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
+# Функция для генерации случайного номера телефона
+def generate_random_phone() -> str:
+    return f"+7{random.randint(9000000000, 9999999999)}"
+
+
+    
+async def create_admin():
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(select(Owner))
+        existing_admins = result.scalars().all()
+
+        if existing_admins:  
+            print("Администратор уже существует, новый администратор не будет создан.")
+            return
+
+        last_name = generate_random_string(5)
+        first_name = generate_random_string(5)
+        middle_name = generate_random_string(5)
+        phone = generate_random_phone()
+        password = 'root'  # Замените на генерируемый пароль, если необходимо
+        token = secrets.token_hex(16)
+
+        admin = Owner(
+            last_name=last_name,
+            first_name=first_name,
+            middle_name=middle_name,
+            phone=phone,
+            password=password,
+            token=token
+        )
+
+        session.add(admin)
+        await session.commit()

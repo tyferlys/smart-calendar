@@ -18,3 +18,5 @@ async def create_tables():
 
 
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
+

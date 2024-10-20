@@ -5,7 +5,6 @@ from src.api.pydanticTypes.owner import OwnerLoginResponse, OwnerUpdateResponse,
 from src.database.configDataBase import AsyncSessionLocal
 from src.database.models.models import Owner
 
-
 async def login_owner_database(password: str) -> OwnerLoginResponse | None:
     async with AsyncSessionLocal() as session:
         async with session.begin():

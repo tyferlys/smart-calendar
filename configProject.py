@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     PROD_DB_URL: str
     MODE: str
     TOKEN: str
+    ADMIN_CREDENTIALS: str
 
     class Config:
         env_file = find_dotenv(".env")

@@ -12,7 +12,6 @@ from src.database.operations.operationsClient import create_client_database, get
 
 routerClient = APIRouter()
 
-
 @routerClient.get("", tags=["clients.get"])
 async def get_clients(page: int, count: int, response: Response) -> ClientGetAllResponse | None:
     logger.info(f"Запрос на получение клиентов с данными: page - {page}, count - {count}")
