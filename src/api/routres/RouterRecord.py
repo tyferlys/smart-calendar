@@ -16,7 +16,7 @@ routerRecord = APIRouter()
 #     pass
 #
 #
-@routerRecord.get("/{phoneOrTelegramId}", tags=["records.get"])
+@routerRecord.get("/{phoneOrTelegramId}", tags=["records"])
 async def get_records_client(phoneOrTelegramId: str, response: Response) -> List[RecordGetRequest] | None:
     logger.info(f"Запрос на получение записией клиента: данные - {phoneOrTelegramId}")
     try:
@@ -31,7 +31,7 @@ async def get_records_client(phoneOrTelegramId: str, response: Response) -> List
         return None
 
 
-@routerRecord.post("", tags=["records.post"])
+@routerRecord.post("", tags=["records"])
 async def create_record(event: RecordCreateRequest, response: Response) -> RecordCreateResponse | None:
     logger.info(f"Запрос на создание записи: данные - {event}")
     try:

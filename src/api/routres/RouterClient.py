@@ -12,7 +12,7 @@ from src.database.operations.operationsClient import create_client_database, get
 
 routerClient = APIRouter()
 
-@routerClient.get("", tags=["clients.get"])
+@routerClient.get("", tags=["clients"])
 async def get_clients(page: int, count: int, response: Response) -> ClientGetAllResponse | None:
     logger.info(f"Запрос на получение клиентов с данными: page - {page}, count - {count}")
     try:
@@ -29,7 +29,7 @@ async def get_clients(page: int, count: int, response: Response) -> ClientGetAll
         return None
 
 
-@routerClient.get("/{phoneOrTelegramId}", tags=["clients.get"])
+@routerClient.get("/{phoneOrTelegramId}", tags=["clients"])
 async def get_client(phoneOrTelegramId: str, response: Response) -> ClientGetResponse | None:
     logger.info(f"Запрос на получение клиента: данные - {phoneOrTelegramId}")
     try:
@@ -48,7 +48,7 @@ async def get_client(phoneOrTelegramId: str, response: Response) -> ClientGetRes
         return None
 
 
-@routerClient.post("", tags=["clients.post"])
+@routerClient.post("", tags=["clients"])
 async def create_client(client: ClientCreateRequest, response: Response) -> ClientCreateResponse | None:
     logger.info(f"Запрос на создания клиента: данные - {client}")
     try:
@@ -62,7 +62,7 @@ async def create_client(client: ClientCreateRequest, response: Response) -> Clie
         return None
 
 
-@routerClient.put("", tags=["clients.put"])
+@routerClient.put("", tags=["clients"])
 async def update_client(client: ClientUpdateRequest, response: Response) -> ClientUpdateResponse | None:
     logger.info(f"Запрос на обновление клиента: данные - {client}")
     try:

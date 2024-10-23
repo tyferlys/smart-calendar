@@ -17,7 +17,7 @@ from src.api.routres.RouterReport import routerReport
 from src.api.routres.RouterService import routerService
 from src.api.routres.RouterOwner import routerOwner
 from src.database.configDataBase import create_tables
-from src.database.models.models import create_admin
+from src.database.init_db import create_admin, generate_random_service
 
 settings = get_settings()
 app = FastAPI(title="Smart Calendar")
@@ -34,6 +34,7 @@ app.add_middleware(
 async def on_startup():
     await create_tables()
     await create_admin()
+    await generate_random_service()
 
 app.include_router(routerClient, prefix="/clients", tags=["clients"])
 app.include_router(routerOwner, prefix="/owner", tags=["owner"])
@@ -70,10 +71,6 @@ async def add_process_time_header(request: Request, call_next):
             response = JSONResponse(status_code=409, content={"message": "Invalid token"})
             return response
 
-
-@app.get("/")
-def read_root() -> str:
-    return "Сервер работает"
 
 
 def custom_openapi():

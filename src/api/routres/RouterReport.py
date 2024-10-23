@@ -7,7 +7,7 @@ from src.database.operations.operationsReport import create_report_database
 routerReport = APIRouter()
 
 
-@routerReport.post("", tags=["reports.post"])
+@routerReport.post("", tags=["reports"])
 async def create_report(report: ReportCreateRequest, response: Response) -> ReportCreateResponse | None:
     logger.info(f"Запрос на создание обращения: данные - {report}")
     try:

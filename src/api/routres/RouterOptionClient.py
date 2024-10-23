@@ -13,7 +13,7 @@ from src.database.operations.operationOptionClient import get_option_client_data
 routerOptionClient = APIRouter()
 
 
-@routerOptionClient.get("/{phoneOrTelegramId}", tags=["options_clients.get"])
+@routerOptionClient.get("/{phoneOrTelegramId}", tags=["options_clients"])
 async def get_option_client(phoneOrTelegramId: str, response: Response) -> OptionClientGetResponse | None:
     logger.info(f"Запрос на настроек пользователя: данные - {phoneOrTelegramId}")
     try:
@@ -31,7 +31,7 @@ async def get_option_client(phoneOrTelegramId: str, response: Response) -> Optio
         return None
 
 
-@routerOptionClient.put("", tags=["options_clients.put"])
+@routerOptionClient.put("", tags=["options_clients"])
 async def get_option_client(optionClient: OptionClientUpdateRequest,
                             response: Response) -> OptionClientUpdateResponse | str:
     logger.info(f"Запрос на обновление настроек пользователя: данные - {optionClient}")

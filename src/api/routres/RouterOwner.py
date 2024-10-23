@@ -17,7 +17,7 @@ settings = get_settings()
 token = os.getenv("TOKEN")
 
 
-@routerOwner.post("/login", tags=["owner.post"])
+@routerOwner.post("/login", tags=["owner"])
 async def login_owner(password: OwnerLoginRequest, response: Response) -> OwnerLoginResponse | None:
     logger.info(f"Запрос на авторизацию администратора: пароль - {password}")
     try:
@@ -36,7 +36,7 @@ async def login_owner(password: OwnerLoginRequest, response: Response) -> OwnerL
         return None
 
 
-@routerOwner.put("", tags=["owner.put"])
+@routerOwner.put("", tags=["owner"])
 async def update_owner(owner: OwnerUpdateRequest, response: Response) -> OwnerUpdateResponse | None:
     logger.info(f"Запрос на обновление данных администратора: данные - {owner}")
     try:
@@ -50,7 +50,7 @@ async def update_owner(owner: OwnerUpdateRequest, response: Response) -> OwnerUp
         return None
 
 
-@routerOwner.get("/check_token", tags=["owner.get"])
+@routerOwner.get("/check_token", tags=["owner"])
 async def check_owner_token(token: str, response: Response) -> OwnerLoginResponse | None:
     async with AsyncSessionLocal() as session:
         async with session.begin():

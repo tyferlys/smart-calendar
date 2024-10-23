@@ -10,7 +10,7 @@ from src.database.operations.operationDay import get_days_database, get_day_data
 routerDay = APIRouter()
 
 
-@routerDay.get("", tags=["days.get"])
+@routerDay.get("", tags=["days"])
 async def get_days(beginDate: datetime.date, endDate: datetime.date, response: Response) -> List[int] | None:
     logger.info(f"Запрос на получение дней с данными: beginDate - {beginDate}, endDate - {endDate}")
     try:
@@ -25,7 +25,7 @@ async def get_days(beginDate: datetime.date, endDate: datetime.date, response: R
         return None
 
 
-@routerDay.get("/{dateDay}", tags=["days.get"])
+@routerDay.get("/{dateDay}", tags=["days"])
 async def get_day(dateDay: datetime.date, telegram_id: str, response: Response) -> DayGetResponse | None:
     logger.info(f"Запрос на получение информации о дне с данными: {datetime}")
     try:
