@@ -1,6 +1,7 @@
+from datetime import time
 from sqlalchemy import select
 from src.database.configDataBase import AsyncSessionLocal
-from src.database.models.models import Owner, Service
+from src.database.models.models import Options, Owner, Service
 import random
 import string
 import secrets
@@ -85,3 +86,23 @@ async def create_admin():
 
         session.add(admin)
         await session.commit()
+        
+        
+async def initialize_options() -> None:
+    async with AsyncSessionLocal() as session:
+        async with session.begin():
+            # Проверяем, существуют ли уже настройки
+            existing_options = await session.execute(select(Options))
+            if existing_options.scalars().first() is None:
+                # Если настроек нет, создаем новые
+                option = Options(
+                    begin_time=time(9, 0),  # 9:00
+                    end_time=time(18, 0),    # 18:00
+                    timezone_server=0,        # Таймзона сервера - Москва
+                    timezone_admin=0          # Таймзона админа - Москва
+                )
+                session.add(option)
+                await session.commit()
+                print("Настройки успешно инициализированы.")
+            else:
+                print("Настройки уже существуют.")
